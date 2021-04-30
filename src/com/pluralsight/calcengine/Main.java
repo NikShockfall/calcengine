@@ -21,23 +21,15 @@ public class Main {
 
     static void performCalculations(){
         MathEquation[] equations = new MathEquation[4];
-        equations[0] = create(100.0d, 50.0d, 'd');
-        equations[1] = create(25.0d, 92.0d, 'a');
-        equations[2] = create(225.0d, 17.0d, 's');
-        equations[3] = create(11.0d, 3.0d, 'm');
+        equations[0] = new MathEquation('d', 100.0d, 50.0d);
+        equations[1] = new MathEquation('a', 25.0d, 92.0d);
+        equations[2] = new MathEquation('s', 225.0d, 17.0d);
+        equations[3] = new MathEquation('m',11.0d, 3.0d);
 
         for(MathEquation equation : equations){
             equation.execute();
-            displayResult(equation.opCode, equation.leftVal, equation.rightVal, equation.result);
+            displayResult(equation);
         }
-    }
-
-    private static MathEquation create(double leftVal, double rightVal, char opCode) {
-        MathEquation equation = new MathEquation();
-        equation.leftVal = leftVal;
-        equation.rightVal = rightVal;
-        equation.opCode = opCode;
-        return equation;
     }
 
     static void executeInteractively() {
@@ -57,9 +49,10 @@ public class Main {
         else{
             double leftVal = valueFromWord(parts[1]);
             double rightVal = valueFromWord(parts[2]);
-            double result = execute(opCode, leftVal, rightVal);
-
-            displayResult(opCode, leftVal, rightVal, result);
+            //double result = execute(opCode, leftVal, rightVal);
+            MathEquation equation = new MathEquation(opCode, leftVal, rightVal);
+            equation.execute();
+            displayResult(equation);
 
         }
     }
@@ -70,6 +63,10 @@ public class Main {
         LocalDate newDate = startDate.plusDays(daysToAdd);
         String output = String.format("%s plus %d days is %s", startDate, daysToAdd, newDate);
         System.out.println(output);
+    }
+
+    private static void displayResult(MathEquation eq){
+        displayResult(eq.getOpCode(), eq.getLeftVal(), eq.getRightVal(), eq.result);
     }
 
     private static void displayResult(char opCode, double leftVal, double rightVal, double result) {
@@ -93,22 +90,6 @@ public class Main {
         return symbol;
     }
 
-
-    static double execute(char opCode, double leftVal, double rightVal){
-        switch (opCode) {
-            case 'a':
-                return leftVal + rightVal;
-            case 's':
-                return leftVal - rightVal;
-            case 'm':
-                return leftVal * rightVal;
-            case 'd':
-                return rightVal != 0 ? leftVal / rightVal : 0.0d;
-            default:
-                System.out.println("Invalid operation code: " + opCode);
-                return 0.0d;
-        }
-    }
 
     static char opCodeFromString(String operationName){
         return operationName.charAt(0);
