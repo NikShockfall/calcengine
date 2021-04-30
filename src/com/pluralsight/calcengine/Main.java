@@ -1,5 +1,6 @@
 package com.pluralsight.calcengine;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Main {
@@ -20,7 +21,7 @@ public class Main {
         } else if(args.length == 1 && args[0].equals("interactive"))
             executeInteractively();
         else if(args.length == 3)
-            handleCommandLine(args);
+            performOperation(args);
             else System.out.println("Please provide an operation code and 2 numeric values.");
     }
 
@@ -34,24 +35,32 @@ public class Main {
     }
 
     private static void performOperation(String[] parts){
-        if(parts[1].length() == 1 && parts[2].length() == 1)
-            handleCommandLine(parts);
+        char opCode = opCodeFromString(parts[0]);
+
+        if(opCode == 'w')
+            handleWhen(parts);
         else{
-            char opCode = opCodeFromString(parts[0]);
             double leftVal = valueFromWord(parts[1]);
             double rightVal = valueFromWord(parts[2]);
             double result = execute(opCode, leftVal, rightVal);
 
             displayResult(opCode, leftVal, rightVal, result);
+
         }
+    }
+
+    private static void handleWhen(String[] parts){
+        LocalDate startDate = LocalDate.parse(parts[1]);
+        long daysToAdd = (long) valueFromWord(parts[2]);
+        LocalDate newDate = startDate.plusDays(daysToAdd);
+        String output = String.format("%s plus %d days is %s", startDate, daysToAdd, newDate);
+        System.out.println(output);
     }
 
     private static void displayResult(char opCode, double leftVal, double rightVal, double result) {
         char symbol = symbolFromOpCode(opCode);
 
-        StringBuilder builder = new StringBuilder(20);
-        builder.append(leftVal + " " + symbol + " " + rightVal + " = " + result);
-        String output = builder.toString();
+        String output = String.format("%.3f %c %.3f = %.3f", leftVal, symbol, rightVal, result);
         System.out.println(output);
     }
 
@@ -69,14 +78,6 @@ public class Main {
         return symbol;
     }
 
-    private static void handleCommandLine(String[] args) {
-        char opCode =opCodeFromString(args[0]);
-        double leftVal = Double.parseDouble(args[1]);
-        double rightVal = Double.parseDouble(args[2]);
-        double result = execute(opCode, leftVal, rightVal);
-
-        System.out.println(result);
-    }
 
     static double execute(char opCode, double leftVal, double rightVal){
         double result;
@@ -101,14 +102,15 @@ public class Main {
     }
 
     static char opCodeFromString(String operationName){
-        char opCode = operationName.charAt(0);
-        return opCode;
+        return operationName.charAt(0);
     }
 
     static double valueFromWord(String word){
         String[] numberWords = {"zero", "one", "two", "three", "four", "five",
-                "six", "seven", "eight", "nine", "ten"};
-        double value = 0d;
+                "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen",
+                "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
+                "twenty"};
+        double value = -1d;
 
         int index = 0;
         for(String str : numberWords){
@@ -118,7 +120,8 @@ public class Main {
             } else index++;
         }
 
-
+        if(value == -1d)
+            value = Double.parseDouble(word);
 
         return value;
     }
