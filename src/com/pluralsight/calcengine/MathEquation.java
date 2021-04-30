@@ -5,13 +5,19 @@ public class MathEquation {
     private char opCode;
     double result;
 
-    void setLeftVal(double leftVal) { this.leftVal = leftVal; }
-    void setRightVal(double rightVal) { this.rightVal = rightVal; }
-    void setOpCode(char opCode) { this.opCode = opCode;}
+    private static int numberOfCalculations;
+    private static  double sumOfResults = 0;
 
-    double getLeftVal() { return this.leftVal; }
-    double getRightVal() { return this.rightVal; }
-    char getOpCode() {  return this.opCode ;}
+    public void setLeftVal(double leftVal) { this.leftVal = leftVal; }
+    public void setRightVal(double rightVal) { this.rightVal = rightVal; }
+    public void setOpCode(char opCode) { this.opCode = opCode;}
+
+    public double getLeftVal() { return this.leftVal; }
+    public double getRightVal() { return this.rightVal; }
+    public char getOpCode() {  return this.opCode ;}
+    public double getResult() { return this.result; }
+    public static double getAverageResult() { return sumOfResults / numberOfCalculations; }
+
 
     MathEquation() {}
 
@@ -25,23 +31,43 @@ public class MathEquation {
         setRightVal(rightVal);
     }
 
-    void execute(){
+    public void execute(){
+        CalculateBase calculation = null;
         switch (opCode) {
             case 'a':
-                result =  leftVal + rightVal;
+                calculation = new Adder(leftVal, rightVal);
                 break;
             case 's':
-                result =  leftVal - rightVal;
+                calculation =  new Subtracter(leftVal, rightVal);
                 break;
             case 'm':
-                result =  leftVal * rightVal;
+                calculation =  new Multiplier(leftVal, rightVal);
                 break;
             case 'd':
-                result =  rightVal != 0 ? leftVal / rightVal : 0.0d;
+                calculation = new Divider(leftVal, rightVal);
                 break;
             default:
                 System.out.println("Invalid operation code: " + opCode);
                 result =  0.0d;
         }
+        if(calculation != null) {
+            result = calculation.getResult();
+        }
+
+        numberOfCalculations++;
+        sumOfResults += result;
+    }
+
+    public void execute(double leftVal, double rightVal){
+        setLeftVal(leftVal);
+        setRightVal(rightVal);
+
+        execute();
+    }
+    public void execute(int leftVal, int rightVal){
+        setLeftVal(leftVal);
+        setRightVal(rightVal);
+
+        result = (int) result;
     }
 }

@@ -6,17 +6,51 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        if (args.length == 0){
-            performCalculations();
-
-        } else if(args.length == 1 && args[0].equals("interactive"))
+        if(args.length == 1 && args[0].equals("interactive"))
             executeInteractively();
         else if(args.length == 3)
             performOperation(args);
         else{
-            System.out.println("Please provide an operation code and 2 numeric values.");
-            executeInteractively();
+            int num = getNum();
+            //cls();
+            if (num == 2)
+                performCalculations();
+            else if(num == 1) {
+                System.out.println("Please provide an operation code and 2 numeric values.");
+                executeInteractively();
+            }
+            else {
+                Divider divider = new Divider();
+                doCalculation(divider, 100.0d, 50.0d);
+
+                Adder adder = new Adder();
+                doCalculation(adder, 25.0d, 92.0d);
+
+                performMoreCalculations();
+            }
         }
+    }
+
+    private static void performMoreCalculations() {
+        CalculateBase[] calculations = {
+                new Divider(100.0d, 50.0d),
+                new Adder(25.0d, 92.0d),
+                new Subtracter(225.0d, 17.0d),
+                new Multiplier(11.0d, 3.0d) };
+
+        System.out.println("\nArray Calculations");
+
+        for(CalculateBase calculation : calculations){
+            calculation.calculate();
+            System.out.println("result = " + calculation.getResult());
+        }
+    }
+
+    static void doCalculation(CalculateBase calculation, double leftVal, double rightVal) {
+        calculation.setLeftVal(leftVal);
+        calculation.setRightVal(rightVal);
+        calculation.calculate();
+        System.out.println("Calculation result = " + calculation.getResult());
     }
 
     static void performCalculations(){
@@ -30,6 +64,21 @@ public class Main {
             equation.execute();
             displayResult(equation);
         }
+        System.out.println("Average result = " + MathEquation.getAverageResult());
+
+        System.out.println("\nUsing execute overloads\n");
+
+        MathEquation equationOverload = new MathEquation('d');
+        double leftDouble = 9.0d;
+        double rightDouble = 4.0d;
+        equationOverload.execute(leftDouble, rightDouble);
+        System.out.println("Overloaded result with doubles: " + equationOverload.getResult());
+
+        int leftInt = 9;
+        int rightInt = 4;
+        equationOverload.execute(leftInt, rightInt);
+        System.out.println("Overloaded result with ints: " + (int) equationOverload.getResult());
+
     }
 
     static void executeInteractively() {
@@ -66,7 +115,7 @@ public class Main {
     }
 
     private static void displayResult(MathEquation eq){
-        displayResult(eq.getOpCode(), eq.getLeftVal(), eq.getRightVal(), eq.result);
+        displayResult(eq.getOpCode(), eq.getLeftVal(), eq.getRightVal(), eq.getResult());
     }
 
     private static void displayResult(char opCode, double leftVal, double rightVal, double result) {
@@ -114,5 +163,19 @@ public class Main {
             value = Double.parseDouble(word);
 
         return value;
+    }
+
+    private static int getNum(){
+        System.out.println("\n1- executeInteractively\n2- performCalculations\n3- CalculateBase");
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
+    }
+
+    public static void cls(){
+        try{
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+        }catch (Exception ex){
+            System.out.println(ex);
+        }
     }
 }
